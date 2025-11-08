@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ColegioSanJose.Models.AlumnoPromedioViewModel>
+
+<h2>Promedio de notas por alumno</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Alumno</th>
+            <th>Promedio</th>
+            <th>Materias cursadas</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.NombreCompleto</td>
+                <td>@String.Format("{0:N2}", p.Promedio)</td>
+                <td>@p.CantMaterias</td>
+            </tr>
+        }
+    </tbody>
+</table>
