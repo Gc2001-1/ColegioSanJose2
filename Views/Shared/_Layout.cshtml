@@ -4,80 +4,106 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Colegio San José</title>
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ColegioSanJose.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-primary navbar-dark border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-mortarboard"></i> Colegio San José
-                </a>
+    <!-- Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="spinner"></div>
+    </div>
 
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    Colegio San José
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door"></i> Inicio
+                                <i class="bi bi-house-door-fill"></i> Inicio
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Alumnos" asp-action="Index">
-                                <i class="bi bi-people"></i> Alumnos
+                                <i class="bi bi-people-fill"></i> Alumnos
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Materias" asp-action="Index">
-                                <i class="bi bi-book"></i> Materias
+                                <i class="bi bi-book-fill"></i> Materias
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Expedientes" asp-action="Index">
-                                <i class="bi bi-folder2"></i> Expedientes
+                                <i class="bi bi-folder2-open"></i> Expedientes
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Expedientes" asp-action="PromedioPorAlumno">
-                                <i class="bi bi-bar-chart-line"></i> Promedios
+                                <i class="bi bi-graph-up"></i> Promedios
                             </a>
                         </li>
                     </ul>
-
-                    <span class="navbar-text text-light">
-                        <small>@DateTime.Now.ToString("dd/MM/yyyy")</small>
-                    </span>
+                    <div class="date-badge">
+                        <i class="bi bi-calendar3"></i>
+                        <span>@DateTime.Now.ToString("dd/MM/yyyy")</span>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <!-- Main Content -->
+    <div class="container main-container">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer bg-light text-muted mt-4 py-3">
-        <div class="container text-center">
-            &copy; 2025 - Colegio San José
+    <!-- Footer -->
+    <footer class="custom-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h5 class="mb-2">
+                        <i class="bi bi-mortarboard-fill"></i> Colegio San José
+                    </h5>
+                    <p class="mb-0 text-muted">Sistema de Gestión Académica</p>
+                </div>
+                <div class="footer-links">
+                    <a asp-controller="Home" asp-action="Index">Inicio</a>
+                    <a asp-controller="Alumnos" asp-action="Index">Alumnos</a>
+                    <a asp-controller="Materias" asp-action="Index">Materias</a>
+                    <a asp-controller="Expedientes" asp-action="Index">Expedientes</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" title="Twitter"><i class="bi bi-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+            <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center text-muted">
+                <small>&copy; @DateTime.Now.Year Colegio San José. Todos los derechos reservados.</small>
+            </div>
         </div>
     </footer>
 
@@ -85,6 +111,37 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Ocultar loader cuando la página carga
+        window.addEventListener('load', function() {
+            document.getElementById('pageLoader').classList.add('hidden');
+        });
+
+        // Marcar link activo en navbar
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Efecto smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
