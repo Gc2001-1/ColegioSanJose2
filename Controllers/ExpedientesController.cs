@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ColegioSanJose.Data;
 using ColegioSanJose.Models;
+using System.Linq;
 
 namespace ColegioSanJose.Controllers
 {
@@ -23,27 +21,23 @@ namespace ColegioSanJose.Controllers
         public async Task<IActionResult> Index()
         {
             var expedientes = _context.Expedientes
-            .Include(e => e.Alumno)
-            .Include(e => e.Materia);
+                .Include(e => e.Alumno)
+                .Include(e => e.Materia);
+
             return View(await expedientes.ToListAsync());
         }
 
         // GET: Expedientes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var expediente = await _context.Expedientes
                 .Include(e => e.Alumno)
                 .Include(e => e.Materia)
                 .FirstOrDefaultAsync(m => m.ExpedienteId == id);
-            if (expediente == null)
-            {
-                return NotFound();
-            }
+
+            if (expediente == null) return NotFound();
 
             return View(expediente);
         }
@@ -51,14 +45,11 @@ namespace ColegioSanJose.Controllers
         // GET: Expedientes/Create
         public IActionResult Create()
         {
-            ViewData["AlumnoId"] = new SelectList(_context.Alumnos, "AlumnoId", "Apellido");
-            ViewData["MateriaId"] = new SelectList(_context.Materias, "MateriaId", "NombreMateria");
+            PopulateAlumnoMateriaSelects();
             return View();
         }
 
         // POST: Expedientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ExpedienteId,AlumnoId,MateriaId,NotaFinal,Observaciones")] Expediente expediente)
@@ -69,40 +60,30 @@ namespace ColegioSanJose.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AlumnoId"] = new SelectList(_context.Alumnos, "AlumnoId", "Apellido", expediente.AlumnoId);
-            ViewData["MateriaId"] = new SelectList(_context.Materias, "MateriaId", "NombreMateria", expediente.MateriaId);
+
+            // Si hay errores, repoblar selects y devolver la vista
+            PopulateAlumnoMateriaSelects(expediente.AlumnoId, expediente.MateriaId);
             return View(expediente);
         }
 
         // GET: Expedientes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var expediente = await _context.Expedientes.FindAsync(id);
-            if (expediente == null)
-            {
-                return NotFound();
-            }
-            ViewData["AlumnoId"] = new SelectList(_context.Alumnos, "AlumnoId", "Apellido", expediente.AlumnoId);
-            ViewData["MateriaId"] = new SelectList(_context.Materias, "MateriaId", "NombreMateria", expediente.MateriaId);
+            if (expediente == null) return NotFound();
+
+            PopulateAlumnoMateriaSelects(expediente.AlumnoId, expediente.MateriaId);
             return View(expediente);
         }
 
         // POST: Expedientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ExpedienteId,AlumnoId,MateriaId,NotaFinal,Observaciones")] Expediente expediente)
         {
-            if (id != expediente.ExpedienteId)
-            {
-                return NotFound();
-            }
+            if (id != expediente.ExpedienteId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -113,38 +94,27 @@ namespace ColegioSanJose.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExpedienteExists(expediente.ExpedienteId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ExpedienteExists(expediente.ExpedienteId)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AlumnoId"] = new SelectList(_context.Alumnos, "AlumnoId", "Apellido", expediente.AlumnoId);
-            ViewData["MateriaId"] = new SelectList(_context.Materias, "MateriaId", "NombreMateria", expediente.MateriaId);
+
+            PopulateAlumnoMateriaSelects(expediente.AlumnoId, expediente.MateriaId);
             return View(expediente);
         }
 
         // GET: Expedientes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var expediente = await _context.Expedientes
                 .Include(e => e.Alumno)
                 .Include(e => e.Materia)
                 .FirstOrDefaultAsync(m => m.ExpedienteId == id);
-            if (expediente == null)
-            {
-                return NotFound();
-            }
+
+            if (expediente == null) return NotFound();
 
             return View(expediente);
         }
@@ -158,9 +128,8 @@ namespace ColegioSanJose.Controllers
             if (expediente != null)
             {
                 _context.Expedientes.Remove(expediente);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -184,6 +153,34 @@ namespace ColegioSanJose.Controllers
         private bool ExpedienteExists(int id)
         {
             return _context.Expedientes.Any(e => e.ExpedienteId == id);
+        }
+
+        // ----------------------------
+        // Helper: popular SelectLists
+        // ----------------------------
+        private void PopulateAlumnoMateriaSelects(int? selectedAlumnoId = null, int? selectedMateriaId = null)
+        {
+            var alumnos = _context.Alumnos
+                .OrderBy(a => a.Nombre)
+                .ThenBy(a => a.Apellido)
+                .Select(a => new
+                {
+                    Id = a.AlumnoId,
+                    NombreCompleto = a.Nombre + " " + a.Apellido
+                })
+                .ToList();
+
+            var materias = _context.Materias
+                .OrderBy(m => m.NombreMateria)
+                .Select(m => new
+                {
+                    Id = m.MateriaId,
+                    NombreMateria = m.NombreMateria
+                })
+                .ToList();
+
+            ViewData["AlumnoId"] = new SelectList(alumnos, "Id", "NombreCompleto", selectedAlumnoId);
+            ViewData["MateriaId"] = new SelectList(materias, "Id", "NombreMateria", selectedMateriaId);
         }
     }
 }

@@ -23,6 +23,6 @@ namespace ColegioSanJose.Models
         [StringLength(50)]
         public string Grado { get; set; }
 
-        public ICollection<Expediente> Expedientes { get; set; }
+        public ICollection<Expediente> Expedientes { get; set; } = new List<Expediente>();
     }
 }

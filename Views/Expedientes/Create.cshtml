@@ -1,46 +1,71 @@
 ﻿@model ColegioSanJose.Models.Expediente
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear expediente";
 }
 
-<h1>Create</h1>
+<h1>Crear expediente</h1>
 
-<h4>Expediente</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post" id="formCrearExpediente">
+            @Html.AntiForgeryToken()
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AlumnoId" class="control-label"></label>
-                <select asp-for="AlumnoId" class ="form-control" asp-items="ViewBag.AlumnoId"></select>
+
+            <div class="form-group mb-2">
+                <label asp-for="AlumnoId" class="control-label">Alumno</label>
+                @Html.DropDownListFor(model => model.AlumnoId,
+                (SelectList)ViewData["AlumnoId"],
+                                "Seleccione un alumno",
+                                new { @class = "form-control", id = "AlumnoId" })
+                <span asp-validation-for="AlumnoId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="MateriaId" class="control-label"></label>
-                <select asp-for="MateriaId" class ="form-control" asp-items="ViewBag.MateriaId"></select>
+
+            <div class="form-group mb-2">
+                <label asp-for="MateriaId" class="control-label">Materia</label>
+                @Html.DropDownListFor(model => model.MateriaId,
+                                (SelectList)ViewData["MateriaId"],
+                                "Seleccione una materia",
+                                new { @class = "form-control", id = "MateriaId" })
+                <span asp-validation-for="MateriaId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NotaFinal" class="control-label"></label>
+
+            <div class="form-group mb-2">
+                <label asp-for="NotaFinal" class="control-label">Nota final</label>
                 <input asp-for="NotaFinal" class="form-control" />
                 <span asp-validation-for="NotaFinal" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Observaciones" class="control-label"></label>
-                <input asp-for="Observaciones" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Observaciones" class="control-label">Observaciones</label>
+                @Html.TextAreaFor(model => model.Observaciones, 5, 60, new { @class = "form-control" })
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">Crear</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Volver</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Pequeño safeguard: cuando se haga submit, deshabilita el botón para evitar dobles clicks
+        (function() {
+            const form = document.getElementById('formCrearExpediente');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    const btn = form.querySelector('button[type="submit"]');
+                    if (btn) btn.disabled = true;
+                });
+            }
+        })();
+    </script>
 }

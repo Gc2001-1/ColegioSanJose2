@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ColegioSanJose.Data;
 using ColegioSanJose.Models;
@@ -28,17 +27,11 @@ namespace ColegioSanJose.Controllers
         // GET: Materias/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var materia = await _context.Materias
                 .FirstOrDefaultAsync(m => m.MateriaId == id);
-            if (materia == null)
-            {
-                return NotFound();
-            }
+            if (materia == null) return NotFound();
 
             return View(materia);
         }
@@ -50,48 +43,72 @@ namespace ColegioSanJose.Controllers
         }
 
         // POST: Materias/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MateriaId,NombreMateria,Docente")] Materia materia)
         {
-            if (ModelState.IsValid)
+            // --- Depuración: mostrar lo que llega en Request.Form (temporal) ---
+            Console.WriteLine("=== POST /Materias/Create recibido ===");
+            foreach (var key in Request.Form.Keys)
             {
-                _context.Add(materia);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine($"Form key: {key} = '{Request.Form[key]}'");
             }
-            return View(materia);
+
+            // --- Depuración: mostrar errores de ModelState (si los hay) ---
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState inválido. Errores:");
+                foreach (var kv in ModelState)
+                {
+                    foreach (var err in kv.Value.Errors)
+                    {
+                        var exMsg = err.Exception != null ? $" (Exception: {err.Exception.Message})" : "";
+                        Console.WriteLine($" - Key: {kv.Key} Error: '{err.ErrorMessage}'{exMsg}");
+                    }
+                }
+            }
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _context.Add(materia);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"Materia guardada correctamente. Id: {materia.MateriaId}");
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Si llegamos aquí, ModelState no es válido: volver a mostrar la vista con los datos
+                return View(materia);
+            }
+            catch (Exception ex)
+            {
+                // Registrar excepción completa para depuración
+                Console.WriteLine("Excepción al intentar guardar la materia:");
+                Console.WriteLine(ex.ToString());
+
+                // Mostrar un error amigable en la vista
+                ModelState.AddModelError(string.Empty, "Ocurrió un error al guardar la materia. Revisa la salida del servidor para más detalles.");
+                return View(materia);
+            }
         }
 
         // GET: Materias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var materia = await _context.Materias.FindAsync(id);
-            if (materia == null)
-            {
-                return NotFound();
-            }
+            if (materia == null) return NotFound();
             return View(materia);
         }
 
         // POST: Materias/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("MateriaId,NombreMateria,Docente")] Materia materia)
         {
-            if (id != materia.MateriaId)
-            {
-                return NotFound();
-            }
+            if (id != materia.MateriaId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,14 +119,8 @@ namespace ColegioSanJose.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MateriaExists(materia.MateriaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!MateriaExists(materia.MateriaId)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -119,17 +130,11 @@ namespace ColegioSanJose.Controllers
         // GET: Materias/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var materia = await _context.Materias
                 .FirstOrDefaultAsync(m => m.MateriaId == id);
-            if (materia == null)
-            {
-                return NotFound();
-            }
+            if (materia == null) return NotFound();
 
             return View(materia);
         }
@@ -155,3 +160,4 @@ namespace ColegioSanJose.Controllers
         }
     }
 }
+

@@ -10,11 +10,11 @@ namespace ColegioSanJose.Models
 
         [Required]
         [StringLength(100)]
-        public string NombreMateria { get; set; }
+        public required string NombreMateria { get; set; }
 
         [StringLength(100)]
-        public string Docente { get; set; }
+        public required string Docente { get; set; }
 
-        public ICollection<Expediente> Expedientes { get; set; }
+        public required ICollection<Expediente> Expedientes { get; set; }
     }
 }

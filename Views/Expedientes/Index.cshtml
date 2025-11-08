@@ -1,5 +1,19 @@
 ﻿@model IEnumerable<ColegioSanJose.Models.Expediente>
 
+
+@{
+    ViewData["Title"] = "Expedientes";
+}
+
+
+<h1>Expedientes</h1>
+
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Agregar nuevo expediente</a>
+</p>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -14,8 +28,8 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@(item.Alumno.Nombre + " " + item.Alumno.Apellido)</td>
-                <td>@item.Materia.NombreMateria</td>
+                <td>@(item.Alumno?.Nombre + " " + item.Alumno?.Apellido)</td>
+                <td>@item.Materia?.NombreMateria</td>
                 <td>@item.NotaFinal</td>
                 <td>@item.Observaciones</td>
                 <td>

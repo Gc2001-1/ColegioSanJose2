@@ -14,5 +14,15 @@ namespace ColegioSanJose.Data
         public DbSet<Alumno> Alumnos { get; set; }
         public DbSet<Materia> Materias { get; set; }
         public DbSet<Expediente> Expedientes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configurar precisión de NotaFinal
+            modelBuilder.Entity<Expediente>()
+                .Property(e => e.NotaFinal)
+                .HasColumnType("decimal(5,2)");
+        }
     }
 }
