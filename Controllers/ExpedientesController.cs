@@ -22,8 +22,10 @@ namespace ColegioSanJose.Controllers
         // GET: Expedientes
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Expedientes.Include(e => e.Alumno).Include(e => e.Materia);
-            return View(await applicationDbContext.ToListAsync());
+            var expedientes = _context.Expedientes
+            .Include(e => e.Alumno)
+            .Include(e => e.Materia);
+            return View(await expedientes.ToListAsync());
         }
 
         // GET: Expedientes/Details/5
