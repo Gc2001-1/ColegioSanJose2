@@ -175,7 +175,7 @@ namespace ColegioSanJose.Controllers
                 .Select(m => new
                 {
                     Id = m.MateriaId,
-                    NombreMateria = m.NombreMateria
+                    m.NombreMateria
                 })
                 .ToList();
 

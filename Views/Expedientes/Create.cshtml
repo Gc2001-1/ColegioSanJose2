@@ -14,9 +14,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group mb-2">
-                <label asp-for="AlumnoId" class="control-label">Alumno</label>
+                <label asp-for="AlumnoId"
+                       class="control-label">Alumno</label>
                 @Html.DropDownListFor(model => model.AlumnoId,
-                (SelectList)ViewData["AlumnoId"],
+                ViewData["AlumnoId"] as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()),
                                 "Seleccione un alumno",
                                 new { @class = "form-control", id = "AlumnoId" })
                 <span asp-validation-for="AlumnoId" class="text-danger"></span>
@@ -25,7 +26,7 @@
             <div class="form-group mb-2">
                 <label asp-for="MateriaId" class="control-label">Materia</label>
                 @Html.DropDownListFor(model => model.MateriaId,
-                                (SelectList)ViewData["MateriaId"],
+                                ViewData["MateriaId"] as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()),
                                 "Seleccione una materia",
                                 new { @class = "form-control", id = "MateriaId" })
                 <span asp-validation-for="MateriaId" class="text-danger"></span>
